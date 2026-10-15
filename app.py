@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import requests
@@ -10,6 +11,13 @@ st.title('NSE 200 | Institutional Accumulation Research Screener')
 st.caption('1–3 month research watchlist • Ownership evidence + price confirmation • Not a prediction or trading signal')
 
 CONSTITUENTS_URL = 'https://niftyindices.com/IndexConstituent/ind_nifty200list.csv'
+DATA_DIR = Path(__file__).resolve().parent / 'data'
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def read_repository_csv(filename):
+    path = DATA_DIR / filename
+    return path.read_bytes() if path.is_file() else None
+
 OWNERSHIP_COLS = ['symbol','as_of_date','fpi_pct','dii_pct','mf_pct','source_url']
 MF_COLS = ['symbol','as_of_date','mf_schemes_holding','mf_shares_held','source_url']
 
@@ -106,8 +114,16 @@ with st.sidebar:
     st.markdown('[NSE company shareholding filings](https://www.nseindia.com/companies-listing/corporate-filings-shareholding-pattern)')
     st.markdown('[AMFI disclosures](https://www.amfiindia.com/)')
 
-ownership = validate_upload(ownership_upload, OWNERSHIP_COLS, 'Shareholding')
-mf_data = validate_upload(mf_upload, MF_COLS, 'MF holdings')
+ownership_source = ownership_upload if ownership_upload is not None else read_repository_csv('shareholding_history.csv')
+mf_source = mf_upload if mf_upload is not None else read_repository_csv('mf_holdings_history.csv')
+ownership = validate_upload(io.BytesIO(ownership_source) if isinstance(ownership_source, bytes) else ownership_source, OWNERSHIP_COLS, 'Shareholding')
+mf_data = validate_upload(io.BytesIO(mf_source) if isinstance(mf_source, bytes) else mf_source, MF_COLS, 'MF holdings')
+if ownership_upload is None and ownership is not None:
+    st.success('Quarterly institutional history loaded automatically from repository.')
+if mf_upload is None and mf_data is not None:
+    st.success('Monthly mutual fund history loaded automatically from repository.')
+if ownership is None and mf_data is None:
+    st.caption('No verified institutional datasets yet. Rankings remain PRICE ONLY.')
 
 with st.expander('CSV formats and interpretation', expanded=False):
     st.code('symbol,as_of_date,fpi_pct,dii_pct,mf_pct,source_url\nRELIANCE,2026-06-30,,,,https://example.org/source\nRELIANCE,2026-09-30,,,,https://example.org/source', language='csv')
