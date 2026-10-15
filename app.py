@@ -100,7 +100,7 @@ with st.sidebar:
     st.caption('Each institutional file needs at least two dated observations per stock. Source URLs are retained for audit.')
     benchmark = st.text_input('Benchmark ticker (Yahoo Finance)', '^CNX200')
     max_symbols = st.slider('Stocks to scan (200 = full universe)', 20, 200, 200, step=10)
-    min_score = st.slider('Minimum evidence-adjusted score', 0, 100, 55)
+    min_score = st.slider('Minimum evidence-adjusted score', 0, 100, 20, help='Without ownership uploads, PRICE ONLY stocks can score at most 44.4% of the 90-point model.')
     st.divider()
     st.markdown('[Official Nifty 200 constituents](https://www.niftyindices.com/IndexConstituent/ind_nifty200list.csv)')
     st.markdown('[NSE company shareholding filings](https://www.nseindia.com/companies-listing/corporate-filings-shareholding-pattern)')
@@ -135,7 +135,13 @@ if len(symbols) < 1:
 
 st.info(f'Universe: {len(symbols)} symbols. Ownership: {"loaded" if ownership is not None else "not supplied"}. MF monthly data: {"loaded" if mf_data is not None else "not supplied"}.')
 
-if not st.button('Run screening', type='primary'):
+if 'screening_started' not in st.session_state:
+    st.session_state.screening_started = False
+
+if st.button('Run screening', type='primary'):
+    st.session_state.screening_started = True
+
+if not st.session_state.screening_started:
     st.stop()
 
 with st.spinner('Fetching historical prices and evaluating available evidence...'):
@@ -229,10 +235,10 @@ cols[2].metric('Passing score filter',len(filtered))
 cols[3].metric('Benchmark',benchmark)
 
 st.subheader('Ranked watchlist')
-require_evidence = st.checkbox('Show only stocks with verified institutional ownership data',value=True)
+require_evidence = st.checkbox('Show only stocks with verified institutional ownership data', value=False, help='Turn on after uploading verified ownership history.')
 view = filtered[filtered['Ownership coverage %']>0] if require_evidence else filtered
 if view.empty:
-    st.info('No stocks meet the current filters with verified ownership changes. Upload at least two dated shareholding observations per stock, or uncheck the ownership requirement to view PRICE-ONLY research candidates.')
+    st.info('No stocks meet the current filters. Try lowering the minimum score in the sidebar. Verified institutional rankings require dated ownership disclosures.')
 else:
     st.dataframe(view, use_container_width=True, hide_index=True)
 
