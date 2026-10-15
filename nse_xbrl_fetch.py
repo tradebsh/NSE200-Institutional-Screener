@@ -3,7 +3,15 @@ import argparse, csv, hashlib, json, pathlib, time
 from urllib.parse import urlparse
 import requests
 
-ALLOWED_HOSTS = {'nseindia.com', 'www.nseindia.com', 'nseindia.in', 'www.nseindia.in', 'archives.nseindia.com'}
+
+ALLOWED_HOSTS = {
+    'nseindia.com',
+    'www.nseindia.com',
+    'nseindia.in',
+    'www.nseindia.in',
+    'archives.nseindia.com',
+    'nsearchives.nseindia.com',
+}
 MAX_BYTES = 12_000_000
 
 def allowed_url(url):
