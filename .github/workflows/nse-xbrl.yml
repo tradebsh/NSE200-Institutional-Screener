@@ -24,4 +24,4 @@ jobs:
         run: pip install requests
 
       - name: Download NSE XBRL disclosures
-        run: python nse_xbrl_fetch.py --help
+        run: python nse_xbrl_fetch.py --manifest nse_xbrl_manifest.csv --output downloaded_disclosures
