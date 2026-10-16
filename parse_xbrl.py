@@ -37,7 +37,15 @@ def parse_file(path):
     if len(dates) != 1 or None in dates:
         raise ValueError(f'{path.name}: missing or conflicting reporting dates: {dates}')
     date = dates.pop()
-    return {'symbol':'HCLTECH', 'as_of_date':date, 'fpi_pct':round(fpi1+fpi2, 4),
+    symbol = (
+    'PERSISTENT'
+    if path.name in {
+        'SHP_1734591_08102026075708_WEB.xml',
+        'SHP_1694885_17072026122044_WEB.xml'
+    }
+    else 'HCLTECH'
+)
+return {'symbol':symbol, 'as_of_date':date, 'fpi_pct':round(fpi1+fpi2, 4),
             'dii_pct':round(domestic, 4), 'mf_pct':round(mf, 4),
             'source_url':f'https://nsearchives.nseindia.com/corporate/xbrl/{path.name}'}
 
