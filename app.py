@@ -202,6 +202,20 @@ for symbol, p in prices.items():
     price_score = 20*(0.5*scaled_score(rs1,-5,10)+0.5*scaled_score(rs3,-10,20))
     trend_score = 10 if trend else 0
     own = own_deltas.get(symbol,{})
+        fpi_change = own.get('fpi_pct_delta', np.nan)
+    dii_change = own.get('dii_pct_delta', np.nan)
+
+    if pd.notna(fpi_change) and pd.notna(dii_change):
+        if fpi_change > 0 and dii_change > 0:
+            ownership_signal = 'BOTH INCREASING'
+        elif fpi_change > 0 or dii_change > 0:
+            ownership_signal = 'MIXED'
+        elif fpi_change < 0 or dii_change < 0:
+            ownership_signal = 'DECREASING'
+        else:
+            ownership_signal = 'UNCHANGED'
+    else:
+        ownership_signal = 'INSUFFICIENT DATA'
     mfd = mf_deltas.get(symbol,{})
     # Ownership 35 pts: FPI 12, DII 12, MF 11. Only independently verified deltas count.
     # Missing data receives no points AND is excluded from coverage denominator.
@@ -223,7 +237,7 @@ for symbol, p in prices.items():
     # Max possible is 30 market + 10 volume + 50 ownership.
     coverage = round(possible/50*100)
     evidence_status = 'OWNERSHIP CONFIRMED' if coverage>=70 else 'PARTIAL OWNERSHIP' if coverage>0 else 'PRICE ONLY'
-    records.append({'Symbol':symbol,'Evidence score / 90':total,'Ownership coverage %':coverage,'Evidence':evidence_status,
+    records.append({'Symbol':symbol,'Evidence score / 90':total,'Ownership coverage %':coverage,'Evidence':evidence_status,'Institutional Signal':ownership_signal,
         'FPI change (pp)':own.get('fpi_pct_delta',np.nan),'DII change (pp)':own.get('dii_pct_delta',np.nan),
         'MF ownership change (pp)':own.get('mf_pct_delta',np.nan),'MF shares change':mfd.get('mf_shares_held_delta',np.nan),
         'MF schemes change':mfd.get('mf_schemes_holding_delta',np.nan),'RS 1M (pp)':round(rs1,2),'RS 3M (pp)':round(rs3,2),
