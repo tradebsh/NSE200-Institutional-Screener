@@ -37,14 +37,20 @@ def parse_file(path):
     if len(dates) != 1 or None in dates:
         raise ValueError(f'{path.name}: missing or conflicting reporting dates: {dates}')
     date = dates.pop()
-    symbol = (
-    'PERSISTENT'
-    if path.name in {
-        'SHP_1734591_08102026075708_WEB.xml',
-        'SHP_1694885_17072026122044_WEB.xml'
+        FILE_SYMBOLS = {
+        'SHP_1734591_08102026075708_WEB.xml': 'PERSISTENT',
+        'SHP_1694885_17072026122044_WEB.xml': 'PERSISTENT',
+        'SHP_1656872_21042026093835_WEB.xml': 'HCLTECH',
+        'SHP_1696003_18072026013727_WEB.xml': 'HCLTECH',
     }
-    else 'HCLTECH'
-)
+
+    symbol = FILE_SYMBOLS.get(path.name)
+
+    if symbol is None:
+        raise ValueError(
+            f'Unknown company for {path.name}. '
+            'Add a verified filename-to-symbol mapping first.'
+        )
     return {'symbol':symbol, 'as_of_date':date, 'fpi_pct':round(fpi1+fpi2, 4),
             'dii_pct':round(domestic, 4), 'mf_pct':round(mf, 4),
             'source_url':f'https://nsearchives.nseindia.com/corporate/xbrl/{path.name}'}
