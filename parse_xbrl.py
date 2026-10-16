@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'data' / 'shareholding_history.csv'
+MAPPING_FILE = ROOT / 'xbrl_company_mapping.csv'
 FACT = 'ShareholdingAsAPercentageOfTotalNumberOfShares'
 CATEGORIES = {
     'mf_pct': 'MutualFundsOrUTI_ContextI',
