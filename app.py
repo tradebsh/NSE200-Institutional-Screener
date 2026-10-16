@@ -342,6 +342,36 @@ st.caption(
     'Quarterly ownership percentage-point changes, '
     'not actual institutional purchase amounts.'
 )
+
+# Stock-wise Institutional Analysis
+st.subheader('Stock-wise Institutional Analysis')
+
+selected_stock = st.selectbox(
+    'Select a stock to analyze',
+    sorted(result['Symbol'].unique())
+)
+
+stock = result[result['Symbol'] == selected_stock].iloc[0]
+
+st.write('**Institutional Signal:**', stock['Institutional Signal'])
+
+stock_cols = st.columns(3)
+stock_cols[0].metric(
+    'Conviction Score',
+    f"{stock['Institutional Conviction Score']}/100"
+)
+stock_cols[1].metric(
+    'FPI Change (pp)',
+    f"{stock['FPI change (pp)']:.2f}"
+)
+stock_cols[2].metric(
+    'DII Change (pp)',
+    f"{stock['DII change (pp)']:.2f}"
+)
+
+st.write('**3-Month Relative Strength (pp):**', stock['RS 3M (pp)'])
+st.write('**Positive Trend:**', stock['Trend positive'])
+st.write('**Ownership Filing Date:**', stock['Ownership as of'])
 st.subheader('Ranked watchlist')
 require_evidence = st.checkbox('Show only stocks with verified institutional ownership data', value=False, help='Turn on after uploading verified ownership history.')
 both_increasing_only = st.checkbox(
