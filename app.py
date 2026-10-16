@@ -205,15 +205,20 @@ for symbol, p in prices.items():
     fpi_change = own.get('fpi_pct_delta', np.nan)
     dii_change = own.get('dii_pct_delta', np.nan)
 
+    
     if pd.notna(fpi_change) and pd.notna(dii_change):
         if fpi_change > 0 and dii_change > 0:
             ownership_signal = 'BOTH INCREASING'
-        elif fpi_change > 0 or dii_change > 0:
-            ownership_signal = 'MIXED'
-        elif fpi_change < 0 or dii_change < 0:
-            ownership_signal = 'DECREASING'
-        else:
+        elif fpi_change < 0 and dii_change < 0:
+            ownership_signal = 'BOTH DECREASING'
+        elif fpi_change == 0 and dii_change == 0:
             ownership_signal = 'UNCHANGED'
+        elif fpi_change >= 0 and dii_change >= 0:
+            ownership_signal = 'PARTIAL INCREASE'
+        elif fpi_change <= 0 and dii_change <= 0:
+            ownership_signal = 'PARTIAL DECREASE'
+        else:
+            ownership_signal = 'MIXED'
     else:
         ownership_signal = 'INSUFFICIENT DATA'
     mfd = mf_deltas.get(symbol,{})
