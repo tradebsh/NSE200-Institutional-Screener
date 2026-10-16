@@ -223,7 +223,7 @@ for symbol, p in prices.items():
         ownership_signal = 'INSUFFICIENT DATA'
     mfd = mf_deltas.get(symbol,{})
     
-        conviction_coverage = sum(
+    conviction_coverage = sum(
         pd.notna(value)
         for value in [
             fpi_change,
