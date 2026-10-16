@@ -26,6 +26,16 @@ jobs:
       - name: Extract official NSE filing links
         run: python extract_nse_links.py
 
+      - name: Match Nifty 200 filings
+        run: python match_nifty200_filings.py
+
+      - name: Upload matched Nifty 200 filings
+        uses: actions/upload-artifact@v4
+        with:
+          name: nifty200-matched-filings
+          path: nifty200_matched_filings.csv
+          if-no-files-found: error
+
       - name: Upload discovered filing links
         uses: actions/upload-artifact@v4
         with:
