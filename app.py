@@ -344,6 +344,39 @@ st.caption(
 )
 
 # Stock-wise Institutional Analysis
+
+# Institutional Ownership Data Freshness
+st.subheader('Institutional Data Freshness')
+
+filing_dates = pd.to_datetime(
+    result['Ownership as of'],
+    errors='coerce'
+)
+
+days_old = (
+    pd.Timestamp.now().normalize() - filing_dates
+).dt.days
+
+result['Data Age (Days)'] = days_old
+
+result['Data Freshness'] = np.select(
+    [
+        days_old.isna(),
+        (days_old < 0) | (days_old > 120)
+    ],
+    [
+        'MISSING',
+        'STALE'
+    ],
+    default='RECENT'
+)
+
+st.dataframe(
+    result[['Symbol', 'Ownership as of',
+            'Data Age (Days)', 'Data Freshness']],
+    use_container_width=True,
+    hide_index=True
+)
 st.subheader('Stock-wise Institutional Analysis')
 
 selected_stock = st.selectbox(
