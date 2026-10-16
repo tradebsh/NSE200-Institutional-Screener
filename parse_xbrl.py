@@ -45,7 +45,7 @@ def parse_file(path):
     }
     else 'HCLTECH'
 )
-return {'symbol':symbol, 'as_of_date':date, 'fpi_pct':round(fpi1+fpi2, 4),
+    return {'symbol':symbol, 'as_of_date':date, 'fpi_pct':round(fpi1+fpi2, 4),
             'dii_pct':round(domestic, 4), 'mf_pct':round(mf, 4),
             'source_url':f'https://nsearchives.nseindia.com/corporate/xbrl/{path.name}'}
 
