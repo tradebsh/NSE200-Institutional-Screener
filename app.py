@@ -301,6 +301,25 @@ cols[1].metric('Verified ownership coverage',int((result['Ownership coverage %']
 cols[2].metric('Passing score filter',len(filtered))
 cols[3].metric('Benchmark',benchmark)
 
+
+# Institutional Signal Dashboard
+st.subheader('Institutional Signal Dashboard')
+
+both_up = (result['Institutional Signal'] == 'BOTH INCREASING').sum()
+both_down = (result['Institutional Signal'] == 'BOTH DECREASING').sum()
+mixed = (result['Institutional Signal'] == 'MIXED').sum()
+
+high_count = (
+    (result['Institutional Signal'] == 'BOTH INCREASING') &
+    (result['Institutional Conviction Score'] >= 70) &
+    (result['RS 3M (pp)'] > 0)
+).sum()
+
+dashboard_cols = st.columns(4)
+dashboard_cols[0].metric('Both Increasing', int(both_up))
+dashboard_cols[1].metric('Both Decreasing', int(both_down))
+dashboard_cols[2].metric('Mixed Signals', int(mixed))
+dashboard_cols[3].metric('High Conviction', int(high_count))
 st.subheader('Ranked watchlist')
 require_evidence = st.checkbox('Show only stocks with verified institutional ownership data', value=False, help='Turn on after uploading verified ownership history.')
 both_increasing_only = st.checkbox(
