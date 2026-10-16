@@ -29,7 +29,7 @@ def run(manifest, output):
         raise ValueError('Limit manifest to 250 files per run')
     session = requests.Session()
     session.headers.update({'User-Agent':'Mozilla/5.0 (compatible; ResearchDisclosureFetcher/1.0)', 'Accept':'application/xml,text/xml,application/octet-stream,*/*'})
-    session.get('https://www.nseindia.com/', timeout=20)
+    
     saved=[]
     for i, row in enumerate(rows):
         url=(row.get('xbrl_url') or '').strip()
