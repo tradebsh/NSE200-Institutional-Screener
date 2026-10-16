@@ -320,6 +320,28 @@ dashboard_cols[0].metric('Both Increasing', int(both_up))
 dashboard_cols[1].metric('Both Decreasing', int(both_down))
 dashboard_cols[2].metric('Mixed Signals', int(mixed))
 dashboard_cols[3].metric('High Conviction', int(high_count))
+
+# Institutional Ownership Change Chart
+st.subheader('FPI vs DII Ownership Changes')
+
+chart_data = result[
+    ['Symbol', 'FPI change (pp)', 'DII change (pp)']
+].dropna().copy()
+
+if chart_data.empty:
+    st.info('No verified FPI and DII changes available.')
+else:
+    chart_data = chart_data.set_index('Symbol')
+    st.bar_chart(
+        chart_data,
+        x_label='Stock',
+        y_label='Ownership change (percentage points)'
+    )
+
+st.caption(
+    'Quarterly ownership percentage-point changes, '
+    'not actual institutional purchase amounts.'
+)
 st.subheader('Ranked watchlist')
 require_evidence = st.checkbox('Show only stocks with verified institutional ownership data', value=False, help='Turn on after uploading verified ownership history.')
 both_increasing_only = st.checkbox(
