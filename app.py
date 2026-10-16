@@ -202,7 +202,7 @@ for symbol, p in prices.items():
     price_score = 20*(0.5*scaled_score(rs1,-5,10)+0.5*scaled_score(rs3,-10,20))
     trend_score = 10 if trend else 0
     own = own_deltas.get(symbol,{})
-        fpi_change = own.get('fpi_pct_delta', np.nan)
+    fpi_change = own.get('fpi_pct_delta', np.nan)
     dii_change = own.get('dii_pct_delta', np.nan)
 
     if pd.notna(fpi_change) and pd.notna(dii_change):
