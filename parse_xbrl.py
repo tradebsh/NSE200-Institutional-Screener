@@ -38,12 +38,11 @@ def parse_file(path):
     if len(dates) != 1 or None in dates:
         raise ValueError(f'{path.name}: missing or conflicting reporting dates: {dates}')
     date = dates.pop()
-    FILE_SYMBOLS = {
-        'SHP_1734591_08102026075708_WEB.xml': 'PERSISTENT',
-        'SHP_1694885_17072026122044_WEB.xml': 'PERSISTENT',
-        'SHP_1656872_21042026093835_WEB.xml': 'HCLTECH',
-        'SHP_1696003_18072026013727_WEB.xml': 'HCLTECH',
-    }
+        with MAPPING_FILE.open(newline='', encoding='utf-8-sig') as f:
+        FILE_SYMBOLS = {
+            row['filename'].strip(): row['symbol'].strip().upper()
+            for row in csv.DictReader(f)
+        }
 
     symbol = FILE_SYMBOLS.get(path.name)
 
