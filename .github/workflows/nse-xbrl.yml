@@ -23,10 +23,6 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Test NSE XML downloader
-        continue-on-error: true
-        run: python nse_xbrl_fetch.py
-
       - name: Download NSE XBRL disclosures
         run: python parse_xbrl.py
         
