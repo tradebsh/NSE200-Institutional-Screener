@@ -30,7 +30,7 @@ def run(manifest, output):
         raise ValueError('Limit manifest to 250 files per run')
     session = requests.Session()
     session.headers.update({'User-Agent':'Mozilla/5.0 (compatible; ResearchDisclosureFetcher/1.0)', 'Accept':'application/xml,text/xml,application/octet-stream,*/*'})
-        retry = Retry(
+    retry = Retry(
         total=3,
         backoff_factor=2,
         status_forcelist=[429, 500, 502, 503, 504],
