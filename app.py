@@ -222,6 +222,33 @@ for symbol, p in prices.items():
     else:
         ownership_signal = 'INSUFFICIENT DATA'
     mfd = mf_deltas.get(symbol,{})
+    
+        conviction_coverage = sum(
+        pd.notna(value)
+        for value in [
+            fpi_change,
+            dii_change,
+            own.get('mf_pct_delta', np.nan)
+        ]
+        )
+    # Institutional Conviction Score (0-100)
+    conviction_score = 0
+
+    if pd.notna(fpi_change) and fpi_change > 0:
+        conviction_score += 30
+
+    if pd.notna(dii_change) and dii_change > 0:
+        conviction_score += 30
+
+    mf_change = own.get('mf_pct_delta', np.nan)
+    if pd.notna(mf_change) and mf_change > 0:
+        conviction_score += 20
+
+    if rs3 > 0:
+        conviction_score += 10
+
+    if trend:
+        conviction_score += 10
     # Ownership 35 pts: FPI 12, DII 12, MF 11. Only independently verified deltas count.
     # Missing data receives no points AND is excluded from coverage denominator.
     components = [('FPI',12,'fpi_pct_delta',own),('DII',12,'dii_pct_delta',own),('MF',11,'mf_pct_delta',own)]
@@ -243,6 +270,8 @@ for symbol, p in prices.items():
     coverage = round(possible/50*100)
     evidence_status = 'OWNERSHIP CONFIRMED' if coverage>=70 else 'PARTIAL OWNERSHIP' if coverage>0 else 'PRICE ONLY'
     records.append({'Symbol':symbol,'Evidence score / 90':total,'Ownership coverage %':coverage,'Evidence':evidence_status,'Institutional Signal':ownership_signal,
+                    'Institutional Conviction Score':conviction_score,
+                    'Institutional Data Fields Available':conviction_coverage,
         'FPI change (pp)':own.get('fpi_pct_delta',np.nan),'DII change (pp)':own.get('dii_pct_delta',np.nan),
         'MF ownership change (pp)':own.get('mf_pct_delta',np.nan),'MF shares change':mfd.get('mf_shares_held_delta',np.nan),
         'MF schemes change':mfd.get('mf_schemes_holding_delta',np.nan),'RS 1M (pp)':round(rs1,2),'RS 3M (pp)':round(rs3,2),
@@ -257,7 +286,10 @@ if not records:
 
 result = pd.DataFrame(records)
 # Score is explicitly /90: 35 quarterly ownership + 15 monthly MF + 20 RS + 10 trend + 10 volume.
-result = result.sort_values(['Evidence score / 90','Ownership coverage %'], ascending=False)
+result = result.sort_values(
+    ['Institutional Conviction Score', 'Ownership coverage %', 'Evidence score / 90'],
+    ascending=False
+)
 max_score = 90
 result['Score % of available model max'] = (result['Evidence score / 90']/max_score*100).round(1)
 filtered = result[(result['Score % of available model max']>=min_score)]
