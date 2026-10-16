@@ -39,7 +39,7 @@ def parse_file(path):
         raise ValueError(f'{path.name}: missing or conflicting reporting dates: {dates}')
     date = dates.pop()
     with MAPPING_FILE.open(newline='', encoding='utf-8-sig') as f:
-                FILE_SYMBOLS = {
+        FILE_SYMBOLS = {
             row['xbrl_url'].strip().split('/')[-1]: row['symbol'].strip().upper()
             for row in csv.DictReader(f)
         }
