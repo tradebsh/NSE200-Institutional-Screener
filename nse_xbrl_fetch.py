@@ -2,7 +2,8 @@
 import argparse, csv, hashlib, json, pathlib, time
 from urllib.parse import urlparse
 import requests
-
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 ALLOWED_HOSTS = {
     'nseindia.com',
@@ -29,7 +30,15 @@ def run(manifest, output):
         raise ValueError('Limit manifest to 250 files per run')
     session = requests.Session()
     session.headers.update({'User-Agent':'Mozilla/5.0 (compatible; ResearchDisclosureFetcher/1.0)', 'Accept':'application/xml,text/xml,application/octet-stream,*/*'})
-    
+    retry = Retry(
+    total=3,
+    backoff_factor=2,
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET"]
+)
+
+adapter = HTTPAdapter(max_retries=retry)
+session.mount("https://", adapter)
     saved=[]
     for i, row in enumerate(rows):
         url=(row.get('xbrl_url') or '').strip()
