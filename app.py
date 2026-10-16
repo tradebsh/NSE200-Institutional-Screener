@@ -271,7 +271,13 @@ cols[3].metric('Benchmark',benchmark)
 
 st.subheader('Ranked watchlist')
 require_evidence = st.checkbox('Show only stocks with verified institutional ownership data', value=False, help='Turn on after uploading verified ownership history.')
+both_increasing_only = st.checkbox(
+    'Show only stocks where FPI and DII ownership both increased',
+    value=False
+)
 view = filtered[filtered['Ownership coverage %']>0] if require_evidence else filtered
+if both_increasing_only:
+    view = view[view['Institutional Signal'] == 'BOTH INCREASING']
 if view.empty:
     st.info('No stocks meet the current filters. Try lowering the minimum score in the sidebar. Verified institutional rankings require dated ownership disclosures.')
 else:
