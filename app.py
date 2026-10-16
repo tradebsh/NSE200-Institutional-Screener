@@ -315,5 +315,25 @@ if view.empty:
 else:
     st.dataframe(view, use_container_width=True, hide_index=True)
 
+
+# High Conviction Institutional Watchlist
+st.subheader('High Conviction Institutional Watchlist')
+
+high_conviction = result[
+    (result['Institutional Signal'] == 'BOTH INCREASING') &
+    (result['Institutional Conviction Score'] >= 70) &
+    (result['RS 3M (pp)'] > 0)
+].copy()
+
+st.metric('High Conviction Candidates', len(high_conviction))
+
+if high_conviction.empty:
+    st.info('No stocks currently meet all high conviction conditions.')
+else:
+    st.dataframe(
+        high_conviction,
+        use_container_width=True,
+        hide_index=True
+    )
 st.download_button('Download full ranked CSV',data=result.to_csv(index=False).encode('utf-8'),file_name='nse200_research_rankings.csv',mime='text/csv')
 st.caption('FPI/DII/MF quarterly percentages are changes in percentage points, not estimated net purchases. Price return uses ~21/63 sessions. Coverage measures available ownership fields, not data reliability.')
