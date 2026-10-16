@@ -25,3 +25,9 @@ jobs:
 
       - name: Download NSE XBRL disclosures
         run: python parse_xbrl.py
+        
+      - name: Upload ownership CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-shareholding-history
+          path: data/shareholding_history.csv
