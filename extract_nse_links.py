@@ -10,12 +10,13 @@ files = sorted(ROOT.glob("CF-Shareholding-Pattern-equities-*.csv"))
 if not files:
     raise SystemExit("NSE shareholding CSV not found.")
 
-source = files[-1]
+source = files[0]
 results = []
 seen = set()
 
-with source.open("r", encoding="utf-8-sig", newline="") as f:
-    reader = csv.DictReader(f)
+for source in files:
+    with source.open("r", encoding="utf-8-sig", newline="") as f:
+     reader = csv.DictReader(f)
 
     for row in reader:
         company = row["COMPANY"].strip()
