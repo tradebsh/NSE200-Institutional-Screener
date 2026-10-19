@@ -396,10 +396,15 @@ stock_cols[0].metric(
 stock_cols[1].metric(
     'FPI Change (pp)',
     f"{stock['FPI change (pp)']:.2f}"
+    if pd.notna(stock['FPI change (pp)'])
+    else 'Insufficient Data'
 )
+
 stock_cols[2].metric(
     'DII Change (pp)',
     f"{stock['DII change (pp)']:.2f}"
+    if pd.notna(stock['DII change (pp)'])
+    else 'Insufficient Data'
 )
 
 st.write('**3-Month Relative Strength (pp):**', stock['RS 3M (pp)'])
