@@ -149,7 +149,22 @@ def main():
     if not files:
         raise SystemExit("No local NSE XML files found.")
 
-    rows = [parse_file(path, mapping) for path in files]
+    
+    rows = []
+    skipped = 0
+
+    for path in files:
+        try:
+            row = parse_file(path, mapping)
+            rows.append(row)
+        except (ValueError, KeyError, TypeError, ET.ParseError) as error:
+            skipped += 1
+            print(f"Skipped unsupported filing {path.name}: {error}")
+
+    print(f"Unsupported filings skipped: {skipped}")
+
+    if not rows:
+        raise SystemExit("No valid ownership filings were parsed.")
     keys = [(row["symbol"], row["as_of_date"]) for row in rows]
 
     if len(keys) != len(set(keys)):
