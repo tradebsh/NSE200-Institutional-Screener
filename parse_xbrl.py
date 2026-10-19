@@ -2,6 +2,8 @@
 """Parse locally uploaded NSE XBRL shareholding filings."""
 
 import csv
+import time
+import requests
 from pathlib import Path
 from urllib.parse import urlparse
 import xml.etree.ElementTree as ET
@@ -56,6 +58,39 @@ def load_mapping():
     return mapping
 
 
+
+def download_missing_filings(mapping):
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/xml,text/xml,*/*"
+    })
+
+    downloaded = 0
+    failed = 0
+
+    for filename, (_, _, url) in mapping.items():
+        destination = ROOT / filename
+
+        if destination.exists():
+            continue
+
+        try:
+            response = session.get(url, timeout=20)
+            response.raise_for_status()
+
+            # Verify the response is valid XML.
+            ET.fromstring(response.content)
+
+            destination.write_bytes(response.content)
+            downloaded += 1
+            time.sleep(1)
+
+        except (requests.RequestException, ET.ParseError) as error:
+            failed += 1
+            print(f"Download failed: {filename}: {error}")
+
+    print(f"Downloaded: {downloaded}, Failed: {failed}")
 def parse_file(path, mapping):
     if path.name not in mapping:
         raise ValueError(f"Unrecognized filing: {path.name}")
@@ -108,6 +143,7 @@ def parse_file(path, mapping):
 
 def main():
     mapping = load_mapping()
+    download_missing_filings(mapping)
     files = sorted(ROOT.glob("SHP_*_WEB.xml"))
 
     if not files:
