@@ -23,34 +23,34 @@ for source in files:
             date_text = row["AS ON DATE"].strip()
             url = row["ACTION"].strip()
 
-        parsed = urlparse(url)
+            parsed = urlparse(url)
 
-        if (
-            parsed.scheme != "https"
-            or parsed.hostname != "nsearchives.nseindia.com"
-            or not parsed.path.endswith(".xml")
+            if (
+                parsed.scheme != "https"
+                or parsed.hostname != "nsearchives.nseindia.com"
+                or not parsed.path.endswith(".xml")
         ):
-            continue
+                continue
 
-        try:
-            date = datetime.strptime(
-                date_text, "%d-%b-%Y"
-            ).date().isoformat()
-        except ValueError:
-            continue
+            try:
+                date = datetime.strptime(
+                    date_text, "%d-%b-%Y"
+                ).date().isoformat()
+            except ValueError:
+                continue
 
-        key = (company, date, url)
+            key = (company, date, url)
 
-        if key in seen:
-            continue
+            if key in seen:
+                continue
 
-        seen.add(key)
+            seen.add(key)
 
-        results.append({
-            "company": company,
-            "as_of_date": date,
-            "xbrl_url": url
-        })
+            results.append({
+                "company": company,
+                "as_of_date": date,
+                "xbrl_url": url
+            })
 
 output = ROOT / "nse_discovered_filings.csv"
 
