@@ -18,10 +18,10 @@ for source in files:
     with source.open("r", encoding="utf-8-sig", newline="") as f:
      reader = csv.DictReader(f)
 
-    for row in reader:
-        company = row["COMPANY"].strip()
-        date_text = row["AS ON DATE"].strip()
-        url = row["ACTION"].strip()
+        for row in reader:
+            company = row["COMPANY"].strip()
+            date_text = row["AS ON DATE"].strip()
+            url = row["ACTION"].strip()
 
         parsed = urlparse(url)
 
