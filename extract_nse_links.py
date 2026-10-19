@@ -16,7 +16,7 @@ seen = set()
 
 for source in files:
     with source.open("r", encoding="utf-8-sig", newline="") as f:
-     reader = csv.DictReader(f)
+        reader = csv.DictReader(f)
 
         for row in reader:
             company = row["COMPANY"].strip()
